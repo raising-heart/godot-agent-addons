@@ -1,0 +1,12 @@
+; Demo project for trying the add-ons: open this folder in Godot 4.4+.
+
+config_version=5
+
+[application]
+
+config/name="Godot Agent Add-ons (demo)"
+config/features=PackedStringArray("4.4")
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/agent_terminal/plugin.cfg", "res://addons/agent_dock/plugin.cfg")

@@ -8,7 +8,7 @@ A chat dock inside the Godot editor that runs [Claude Code](https://claude.com/c
 - **Asks before changing things:** Allow / Allow for this chat / Deny buttons, with a before/after preview of the edit or the command. Read-only Godot tools (project info, scene tree, script check) run without asking.
 - **Three modes:** *Ask before changes*, *Auto-accept file edits*, and *Plan only (no changes)*.
 - **Keeps the editor in sync:** saves your open scenes before sending, then rescans the project and reloads scenes that changed.
-- **Uses the Godot MCP tools** (if installed) to check scripts, run the game and take screenshots.
+- **Uses the [Godot MCP tools](https://github.com/raising-heart/godot-mcp)** (if installed) to check scripts, run the game and take screenshots.
 - Remembers the conversation until you press **New chat**. Pure GDScript, no extra programs.
 
 ## How it works
@@ -24,7 +24,7 @@ The dock starts the official, unmodified `claude` program on your computer in it
   claude auth login
   ```
 
-- Optional but recommended: the Godot MCP server/plugin from this repo, which gives Claude the Godot tools.
+- Optional but recommended: [godot-mcp](https://github.com/raising-heart/godot-mcp), which gives Claude Godot tools (script checks, running the game, screenshots).
 
 ## Install
 

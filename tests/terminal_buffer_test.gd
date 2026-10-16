@@ -1,0 +1,68 @@
+# Unit checks for the terminal screen model.
+# Run from the repo root:  godot --headless --path . --script tests/terminal_buffer_test.gd
+extends SceneTree
+const TB := preload("res://addons/agent_terminal/terminal_buffer.gd")
+var fails := 0
+func row(b, y: int) -> String:
+	return b.get_line(b.screen_start() + y).text().rstrip(" ")
+func check(name: String, got, want) -> void:
+	if str(got) == str(want):
+		print("PASS ", name)
+	else:
+		fails += 1
+		print("FAIL ", name, ": got [", got, "] want [", want, "]")
+func feed(b, s: String) -> void:
+	b.feed(s.to_utf8_buffer())
+func _initialize():
+	var b := TB.new(10, 4)
+	feed(b, "abc\r\ndef")
+	check("lines", [row(b, 0), row(b, 1)], ["abc", "def"])
+	b = TB.new(10, 4)
+	feed(b, "0123456789AB")
+	check("autowrap", [row(b, 0), row(b, 1), b.cursor_x], ["0123456789", "AB", 2])
+	b = TB.new(10, 4)
+	feed(b, "hello\u001b[2J\u001b[3;4HX")
+	check("clear + cursor position", [row(b, 0), row(b, 2), b.cursor_y], ["", "   X", 2])
+	b = TB.new(10, 3)
+	feed(b, "a\r\nb\r\nc\r\nd")
+	check("scroll into scrollback", [b.scrollback.size(), b.scrollback[0].text().rstrip(" "), row(b, 0), row(b, 2)], [1, "a", "b", "d"])
+	b = TB.new(10, 5)
+	feed(b, "1\r\n2\r\n3\r\n4\r\n5\u001b[2;4r\u001b[4;1H\n")
+	check("scroll region", [row(b, 0), row(b, 1), row(b, 2), row(b, 3), row(b, 4)], ["1", "3", "4", "", "5"])
+	b = TB.new(10, 3)
+	feed(b, "main\u001b[?1049h\u001b[Halt screen")
+	check("alt screen on", [b.alt_screen, row(b, 0)], [true, "alt screen"])
+	feed(b, "\u001b[?1049l")
+	check("alt screen off restores", [b.alt_screen, row(b, 0), b.cursor_x], [false, "main", 4])
+	b = TB.new(10, 3)
+	feed(b, "a漢b")
+	var line = b.get_line(0)
+	check("wide char takes 2 cells", [line.chars[1], line.flags[2] & TB.WIDE_TAIL != 0, line.chars[3], b.cursor_x], ["漢", true, "b", 4])
+	b = TB.new(10, 3)
+	var bytes := "é✓".to_utf8_buffer()
+	b.feed(bytes.slice(0, 1))
+	b.feed(bytes.slice(1, 3))
+	b.feed(bytes.slice(3))
+	check("utf8 split across chunks", row(b, 0), "é✓")
+	b = TB.new(10, 3)
+	var replies := []
+	b.reply.connect(func(d): replies.append(d.get_string_from_utf8()))
+	feed(b, "\u001b[2;5H\u001b[6n")
+	check("cursor position report", replies, ["\u001b[2;5R"])
+	b = TB.new(10, 3)
+	feed(b, "\u001b[1;31mred\u001b[0m \u001b[38;2;1;2;3mt")
+	line = b.get_line(0)
+	check("colors", [line.fg[0], line.flags[0] & TB.BOLD, line.fg[3], line.fg[4]], [1, 1, -1, TB.TRUECOLOR | 0x010203])
+	b = TB.new(10, 3)
+	feed(b, "abcdef\u001b[3D\u001b[K")
+	check("erase to end of line", row(b, 0), "abc")
+	b = TB.new(10, 3)
+	feed(b, "\u001b]0;my title\u0007ok")
+	check("title osc hidden", [b.title, row(b, 0)], ["my title", "ok"])
+	b = TB.new(10, 4)
+	feed(b, "abcdefghij")
+	b.resize(6, 4)
+	feed(b, "\r\nxy")
+	check("resize narrower", [row(b, 0), row(b, 1), b.cols], ["abcdef", "xy", 6])
+	print("RESULT: %d failure(s)" % fails)
+	quit(1 if fails else 0)
