@@ -4,6 +4,8 @@ A chat dock inside the Godot editor that runs [Claude Code](https://claude.com/c
 
 > Unofficial community project. Not affiliated with, endorsed by, or supported by Anthropic. Claude and Claude Code are trademarks of Anthropic.
 
+![Agent Dock next to the Inspector](../../docs/agent-dock.png)
+
 - **Knows what you're looking at:** each message can include the open scene, the selected nodes, and the script and line you're on, so "make this node bounce" just works.
 - **Asks before changing things:** Allow / Allow for this chat / Deny buttons, with a before/after preview of the edit or the command. Read-only Godot tools (project info, scene tree, script check) run without asking.
 - **Three modes:** *Ask before changes*, *Auto-accept file edits*, and *Plan only (no changes)*.

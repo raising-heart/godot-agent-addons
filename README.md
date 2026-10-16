@@ -9,6 +9,10 @@ Two Godot 4 editor add-ons for working with [Claude Code](https://claude.com/cla
 | [**Agent Terminal**](addons/agent_terminal) | A real terminal in the bottom panel that opens **in your project folder**. Type `claude` and you get the full Claude Code, exactly as in Windows Terminal. Also a normal PowerShell / Command Prompt. | Windows 10 1809+ / 11 |
 | [**Agent Dock**](addons/agent_dock) | A chat panel next to the Inspector. Sends your open scene, selected nodes and script as context, and shows Allow / Deny cards with edit previews. | Windows, macOS, Linux |
 
+![Agent Terminal running Claude Code inside the Godot editor](docs/agent-terminal.png)
+
+![Agent Dock next to the Inspector](docs/agent-dock.png)
+
 Use either one or both. Both need Godot **4.4+** (tested on 4.7.2).
 
 ## Install

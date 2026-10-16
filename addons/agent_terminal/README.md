@@ -4,6 +4,8 @@ A real terminal in the Godot editor's bottom panel that **opens in your project 
 
 > Unofficial community project. Not affiliated with, endorsed by, or supported by Anthropic. Claude and Claude Code are trademarks of Anthropic.
 
+![Agent Terminal running Claude Code inside the Godot editor](../../docs/agent-terminal.png)
+
 **Windows 10 (1809+) / 11 only for now.** Requires Godot 4.4+ (tested on 4.7.2).
 
 ## Install
