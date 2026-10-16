@@ -28,7 +28,8 @@ func _ready() -> void:
 	_session.output.connect(_on_output)
 	_session.exited.connect(_on_exited)
 	_buffer.reply.connect(_session.write)
-	_buffer.title_changed.connect(func(t: String) -> void: _title.tooltip_text = t)
+	_buffer.title_changed.connect(func(t: String) -> void:
+		_title.tooltip_text = "Project folder: %s\nRunning: %s" % [_project_dir(), t])
 
 
 func _process(_delta: float) -> void:
@@ -49,10 +50,19 @@ func _build_ui() -> void:
 	var bar := HBoxContainer.new()
 	add_child(bar)
 	_title = Label.new()
-	_title.text = "Terminal · " + _project_dir()
-	_title.clip_text = true
+	_title.text = _project_dir().get_file()
+	_title.tooltip_text = "Project folder: " + _project_dir()
+	_title.mouse_filter = Control.MOUSE_FILTER_PASS
+	_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bar.add_child(_title)
+	# In a narrow dock the title would shrink to a single letter; hide it instead
+	bar.resized.connect(func() -> void:
+		var needed := 70.0 * ui_scale
+		for child in bar.get_children():
+			if child != _title:
+				needed += child.get_combined_minimum_size().x + bar.get_theme_constant("separation")
+		_title.visible = bar.size.x >= needed)
 
 	var claude := Button.new()
 	claude.text = "Run claude"
